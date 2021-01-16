@@ -89,7 +89,7 @@ Token* tokenize(char* p) {
             cur->val = strtol(p, &p, 10);
             continue;
         }
-        error_at(token->str, "Cannot be tokenized");
+        error_at(p, "Cannot be tokenized");
     }
     new_token(TK_EOF, cur, p);
     return head.next;
