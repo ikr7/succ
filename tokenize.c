@@ -30,7 +30,7 @@ void expect(char* op) {
         strlen(op) != token->len ||
         strncmp(token->str, op, token->len) != 0
     ) {
-        error_at(token->str, "not '%c'", op);
+        error_at(token->str, "not '%s'", op);
     }
     token = token-> next;
 }
