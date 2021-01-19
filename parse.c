@@ -30,7 +30,7 @@ Node* code[100];
 
 void program() {
     int i = 0;
-    while (!at_eof()) {;
+    while (token->kind != TK_EOF) {;
         code[i++] = stmt();
     }
     code[i] = NULL;

@@ -52,10 +52,6 @@ int expect_number() {
     return val;
 }
 
-bool at_eof() {
-    return token->kind == TK_EOF;
-}
-
 bool is_alnum(char c) {
     return (
         'a' <= c && c <= 'z' ||
