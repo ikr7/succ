@@ -10,6 +10,8 @@
 typedef enum {
     TK_RESERVED,
     TK_RETURN,
+    TK_IF,
+    TK_ELSE,
     TK_IDENT,
     TK_NUM,
     TK_EOF,
@@ -51,6 +53,7 @@ typedef enum {
     ND_LVAR,
     ND_NUM,
     ND_RETURN,
+    ND_IF,
 } NodeKind;
 
 typedef struct Node Node;
@@ -61,10 +64,14 @@ struct Node {
     Node* rhs;
     int val;
     int offset;
+    Node* cond;
+    Node* true_stmt;
+    Node* false_stmt;
 };
 
 Node* new_node(NodeKind kind, Node* lhs, Node* rhs);
 Node* new_node_num(int val);
+Node* new_node_if(Node* cond, Node* true_stmt, Node* false_stmt);
 
 typedef struct LVar LVar;
 

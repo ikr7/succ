@@ -15,6 +15,15 @@ Node* new_node_num(int val) {
     return node;
 }
 
+Node* new_node_if(Node* cond, Node* true_stmt, Node* false_stmt) {
+    Node* node = calloc(1, sizeof(Node));
+    node->kind = ND_IF;
+    node->cond = cond;
+    node->true_stmt = true_stmt;
+    node->false_stmt = false_stmt;
+    return node;
+}
+
 LVar* locals;
 
 LVar* find_lvar(Token* tok) {
@@ -42,9 +51,21 @@ Node* stmt() {
         node = calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
         node->lhs = expr();
-    } else {
-        node = expr();
+        expect(";");
+        return node;
     }
+    if (consume_token(TK_IF)) {
+        expect("(");
+        Node* cond = expr();
+        expect(")");
+        Node* true_stmt = stmt();
+        if (consume_token(TK_ELSE)) {
+            Node* false_stmt = stmt();
+            return new_node_if(cond, true_stmt, false_stmt);
+        }
+        return new_node_if(cond, true_stmt, NULL);
+    }
+    node = expr();
     expect(";");
     return node;
 }
