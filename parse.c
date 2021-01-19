@@ -136,7 +136,7 @@ Node* primary() {
         expect(")");
         return node;
     }
-    Token* tok = consume_ident();
+    Token* tok = consume_token(TK_IDENT);
     if (tok) {
         Node* node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
@@ -156,15 +156,6 @@ Node* primary() {
         return node;
     }
     return new_node_num(expect_number());
-}
-
-Token* consume_ident() {
-    Token* t = token;
-    if (t->kind == TK_IDENT) {
-        token = token-> next;
-        return t;
-    }
-    return NULL;
 }
 
 Token* consume_token(TokenKind kind) {

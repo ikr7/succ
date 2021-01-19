@@ -93,7 +93,6 @@ Node* mul();
 Node* unary();
 Node* primary();
 
-Token* consume_ident();
 Token* consume_token();
 
 // codegen
