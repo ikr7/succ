@@ -4,13 +4,8 @@ Token *token;
 char* user_input;
 
 int dump_tokens() {
-    char* types[4];
-    types[0] = "reserved";
-    types[1] = "identifier";
-    types[2] = "number";
-    types[3] = "eof";
     while (token->kind != TK_EOF) {
-        printf("%.*s\t%s\n", token->len, token->str, types[token->kind]);
+        printf("%.*s\t%d\n", token->len, token->str, token->kind);
         token = token->next;
     }
     return 0;
