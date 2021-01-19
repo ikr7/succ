@@ -63,7 +63,21 @@ struct Node {
 Node* new_node(NodeKind kind, Node* lhs, Node* rhs);
 Node* new_node_num(int val);
 
+typedef struct LVar LVar;
+
+struct LVar {
+    LVar* next;
+    char* name;
+    int len;
+    int offset;
+};
+
+LVar* find_lvar(Token* tok);
+
 extern Node* code[];
+extern LVar* locals;
+
+extern int offset;
 
 void program();
 Node* stmt();
@@ -84,6 +98,8 @@ void gen(Node* node);
 void gen_lval(Node* node);
 
 // main
+
+int dump_tokens();
 
 extern Token *token;
 extern char* user_input;

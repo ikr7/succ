@@ -15,6 +15,17 @@ Node* new_node_num(int val) {
     return node;
 }
 
+LVar* locals;
+
+LVar* find_lvar(Token* tok) {
+    for (LVar* var = locals; var; var = var->next) {
+        if (var->len == tok->len && strncmp(var->name, tok->str, var->len) == 0) {
+            return var;
+        }
+    }
+    return NULL;
+}
+
 Node* code[100];
 
 void program() {
@@ -110,17 +121,31 @@ Node* unary() {
     return primary();
 }
 
+int offset = 0;
+
 Node* primary() {
     if (consume("(")) {
         Node* node = expr();
         expect(")");
         return node;
     }
-    Token* t = consume_ident();
-    if (t) {
+    Token* tok = consume_ident();
+    if (tok) {
         Node* node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
-        node->offset = (t->str[0] - 'a' + 1) * 8;
+        LVar* lvar = find_lvar(tok);
+        if (lvar) {
+            node->offset = lvar->offset;
+        } else {
+            lvar = calloc(1, sizeof(LVar));
+            lvar->next = locals;
+            lvar->name = tok->str;
+            lvar->len = tok->len;
+            lvar->offset = offset;
+            node->offset = lvar->offset;
+            locals = lvar;
+            offset += 8;
+        }
         return node;
     }
     return new_node_num(expect_number());

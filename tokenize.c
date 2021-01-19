@@ -100,8 +100,17 @@ Token* tokenize() {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }
-        if ('a' <= *p && *p <= 'z') {
-            cur = new_token(TK_IDENT, cur, p++, 1);
+        if ('A' <= *p && *p <= 'z' || *p == '_') {
+            cur = new_token(TK_IDENT, cur, p, 0);
+            char* q = p;
+            while (
+                'A' <= *p && *p <= 'z' ||
+                '0' <= *p && *p <= '9' ||
+                *p == '_'
+            ) {
+                p++;
+            }
+            cur->len = p - q;
             continue;
         }
         if (isdigit(*p)) {
