@@ -1,4 +1,4 @@
-#include "9cc.h"
+#include "succ.h"
 
 void gen(Node* node) {
 

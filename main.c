@@ -1,4 +1,4 @@
-#include "9cc.h"
+#include "succ.h"
 
 Token *token;
 char* user_input;
