@@ -37,7 +37,14 @@ void program() {
 }
 
 Node* stmt() {
-    Node* node = expr();
+    Node* node;
+    if (consume_token(TK_RETURN)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_RETURN;
+        node->lhs = expr();
+    } else {
+        node = expr();
+    }
     expect(";");
     return node;
 }
@@ -154,6 +161,15 @@ Node* primary() {
 Token* consume_ident() {
     Token* t = token;
     if (t->kind == TK_IDENT) {
+        token = token-> next;
+        return t;
+    }
+    return NULL;
+}
+
+Token* consume_token(TokenKind kind) {
+    Token* t = token;
+    if (t->kind == kind) {
         token = token-> next;
         return t;
     }

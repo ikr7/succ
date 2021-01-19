@@ -40,5 +40,7 @@ assert 84 'a = 42; a * 2;'
 assert 21 'a = 42; b = 2; a / b;'
 assert 42 'height=12;base=7;area=height*base/2;area;'
 assert 10 '_=1;__=2;___=3;____=4;_+__+___+____;'
+assert 5 'return 5; return 4;'
+assert 7 'a=3*2; b=5; return a/3+b; c=7+13;'
 
 echo OK
