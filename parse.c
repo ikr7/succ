@@ -24,6 +24,16 @@ Node* new_node_if(Node* cond, Node* true_stmt, Node* false_stmt) {
     return node;
 }
 
+Node* new_node_for(Node* for_init, Node* for_cond, Node* for_tick, Node* for_body) {
+    Node* node = calloc(1, sizeof(Node));
+    node->kind = ND_FOR;
+    node->for_init = for_init;
+    node->for_cond = for_cond;
+    node->for_tick = for_tick;
+    node->for_body = for_body;
+    return node;
+};
+
 LVar* locals;
 
 LVar* find_lvar(Token* tok) {
@@ -64,6 +74,21 @@ Node* stmt() {
             return new_node_if(cond, true_stmt, false_stmt);
         }
         return new_node_if(cond, true_stmt, NULL);
+    }
+    if (consume_token(TK_FOR)) {
+        Node* init;
+        Node* cond;
+        Node* tick;
+        Node* body;
+        expect("(");
+        init = expr();
+        expect(";");
+        cond = expr();
+        expect(";");
+        tick = expr();
+        expect(")");
+        body = stmt();
+        return new_node_for(init, cond, tick, body);
     }
     node = expr();
     expect(";");

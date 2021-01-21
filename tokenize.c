@@ -120,6 +120,11 @@ Token* tokenize() {
             p += 4;
             continue;
         }
+        if (strncmp(p, "for", 3) == 0 && !is_alnum(p[3])) {
+            cur = new_token(TK_FOR, cur, p, 3);
+            p += 3;
+            continue;
+        }
         if ('A' <= *p && *p <= 'z' || *p == '_') {
             cur = new_token(TK_IDENT, cur, p, 0);
             char* q = p;

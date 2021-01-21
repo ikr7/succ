@@ -12,6 +12,7 @@ typedef enum {
     TK_RETURN,
     TK_IF,
     TK_ELSE,
+    TK_FOR,
     TK_IDENT,
     TK_NUM,
     TK_EOF,
@@ -54,6 +55,7 @@ typedef enum {
     ND_NUM,
     ND_RETURN,
     ND_IF,
+    ND_FOR,
 } NodeKind;
 
 typedef struct Node Node;
@@ -67,11 +69,16 @@ struct Node {
     Node* cond;
     Node* true_stmt;
     Node* false_stmt;
+    Node* for_init;
+    Node* for_cond;
+    Node* for_tick;
+    Node* for_body;
 };
 
 Node* new_node(NodeKind kind, Node* lhs, Node* rhs);
 Node* new_node_num(int val);
 Node* new_node_if(Node* cond, Node* true_stmt, Node* false_stmt);
+Node* new_node_for(Node* for_init, Node* for_cond, Node* for_tick, Node* for_body);
 
 typedef struct LVar LVar;
 
