@@ -90,6 +90,15 @@ Node* stmt() {
         body = stmt();
         return new_node_for(init, cond, tick, body);
     }
+    if (consume_token(TK_WHILE)) {
+        Node* cond;
+        Node* body;
+        expect("(");
+        cond = expr();
+        expect(")");
+        body = stmt();
+        return new_node_for(new_node_num(0), cond, new_node_num(0), body);
+    }
     node = expr();
     expect(";");
     return node;

@@ -125,6 +125,11 @@ Token* tokenize() {
             p += 3;
             continue;
         }
+        if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+            cur = new_token(TK_WHILE, cur, p, 5);
+            p += 5;
+            continue;
+        }
         if ('A' <= *p && *p <= 'z' || *p == '_') {
             cur = new_token(TK_IDENT, cur, p, 0);
             char* q = p;
