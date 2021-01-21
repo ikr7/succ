@@ -1,6 +1,6 @@
 #include "succ.h"
 
-int if_count = 0;
+int label_count = 0;
 
 void gen(Node* node) {
 
@@ -33,28 +33,28 @@ void gen(Node* node) {
             gen(node->cond);
             printf("  pop rax\n");
             printf("  cmp rax, 0\n");
-            printf("  je .Lelse%d\n", if_count);
+            printf("  je .Lelse%d\n", label_count);
             gen(node->true_stmt);
-            printf("  jmp .Lend%d\n", if_count);
-            printf(".Lelse%d:\n", if_count);
+            printf("  jmp .Lend%d\n", label_count);
+            printf(".Lelse%d:\n", label_count);
             if (node->false_stmt) {
                 gen(node->false_stmt);
             }
-            printf(".Lend%d:\n", if_count);
-            if_count++;
+            printf(".Lend%d:\n", label_count);
+            label_count++;
             return;
         case ND_FOR:
             gen(node->for_init);
-            printf(".Lbegin%d:\n", if_count);
+            printf(".Lbegin%d:\n", label_count);
             gen(node->for_cond);
             printf("  pop rax\n");
             printf("  cmp rax, 0\n");
-            printf("  je .Lend%d\n", if_count);
+            printf("  je .Lend%d\n", label_count);
             gen(node->for_body);
             gen(node->for_tick);
-            printf("  jmp .Lbegin%d\n", if_count);
-            printf(".Lend%d:\n", if_count);
-            if_count++;
+            printf("  jmp .Lbegin%d\n", label_count);
+            printf(".Lend%d:\n", label_count);
+            label_count++;
             return;
     }
 
