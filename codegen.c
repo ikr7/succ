@@ -63,6 +63,9 @@ void gen(Node* node) {
                 node->block_stmts = node->block_stmts->block_next;
             }
             return;
+        case ND_CALL:
+            printf("  call %.*s\n", node->function_len, node->function_name);
+            return;
     }
 
     gen(node->lhs);

@@ -1,12 +1,35 @@
 #!/bin/sh
 
+cat <<EOF > tmp2.c
+#include <stdio.h>
+void print_foo() {
+    printf("foo\n");
+}
+EOF
+
+cc -c tmp2.c
+
 assert() {
     expected="$1"
     input="$2"
     ./succ "$input" > tmp.s
-    cc -o tmp tmp.s
+    cc -o tmp tmp.s tmp2.o
     ./tmp
     actual="$?"
+    if [ "$actual" = "$expected" ]; then
+        echo "$input => $actual"
+    else
+        echo "$input => $expected expected, but got $actual"
+        exit 1
+    fi
+}
+
+assert_output() {
+    expected="$1"
+    input="$2"
+    ./succ "$input" > tmp.s
+    cc -o tmp tmp.s tmp2.o
+    actual=$(./tmp)
     if [ "$actual" = "$expected" ]; then
         echo "$input => $actual"
     else
@@ -50,5 +73,6 @@ assert 55 'n=10; sum=0; for (i=0; i<=n; i=i+1) sum=sum+i; return sum;'
 assert 10 'i=0; while(i<10) i=i+1; return i;'
 assert 42 'a=0; b=0; if (a == b) { a=40; b=2; } return a+b;'
 assert 55 'n=10; sum=0; for (i=0; i<=n; i=i+1) { sum=sum+i; } return sum;'
+assert_output "foo" 'print_foo();'
 
 echo OK
