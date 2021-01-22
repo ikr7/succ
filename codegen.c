@@ -65,6 +65,7 @@ void gen(Node* node) {
             return;
         case ND_CALL:
             printf("  call %.*s\n", node->function_len, node->function_name);
+            printf("  push rax\n");
             return;
     }
 
