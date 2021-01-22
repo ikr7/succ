@@ -18,9 +18,9 @@ Node* new_node_num(int val) {
 Node* new_node_if(Node* cond, Node* true_stmt, Node* false_stmt) {
     Node* node = calloc(1, sizeof(Node));
     node->kind = ND_IF;
-    node->cond = cond;
-    node->true_stmt = true_stmt;
-    node->false_stmt = false_stmt;
+    node->if_cond = cond;
+    node->if_then = true_stmt;
+    node->if_else = false_stmt;
     return node;
 }
 

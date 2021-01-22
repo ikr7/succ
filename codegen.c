@@ -30,15 +30,15 @@ void gen(Node* node) {
             printf("  ret\n");
             return;
         case ND_IF:
-            gen(node->cond);
+            gen(node->if_cond);
             printf("  pop rax\n");
             printf("  cmp rax, 0\n");
             printf("  je .Lelse%d\n", label_count);
-            gen(node->true_stmt);
+            gen(node->if_then);
             printf("  jmp .Lend%d\n", label_count);
             printf(".Lelse%d:\n", label_count);
-            if (node->false_stmt) {
-                gen(node->false_stmt);
+            if (node->if_else) {
+                gen(node->if_else);
             }
             printf(".Lend%d:\n", label_count);
             label_count++;

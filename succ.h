@@ -65,19 +65,31 @@ typedef struct Node Node;
 
 struct Node {
     NodeKind kind;
+
+    // operators
     Node* lhs;
     Node* rhs;
+
+    // variable
     int val;
     int offset;
-    Node* cond;
-    Node* true_stmt;
-    Node* false_stmt;
+
+    // if
+    Node* if_cond;
+    Node* if_then;
+    Node* if_else;
+
+    // for
     Node* for_init;
     Node* for_cond;
     Node* for_tick;
     Node* for_body;
+
+    // block
     Node* block_stmts;
     Node* block_next;
+
+    // function call
     char* function_name;
     int function_len;
 };
