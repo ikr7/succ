@@ -99,6 +99,19 @@ Node* stmt() {
         body = stmt();
         return new_node_for(new_node_num(0), cond, new_node_num(0), body);
     }
+    if (consume("{")) {
+        Node* node = calloc(1, sizeof(Node));
+        Node* stmts = calloc(1, sizeof(Node));
+        node->kind = ND_BLOCK;
+        node->block_stmts = stmts;
+        while (!consume("}")) {
+            Node* s = stmt();
+            stmts->block_next = s;
+            stmts = s;
+        };
+        node->block_stmts = node->block_stmts->block_next;
+        return node;
+    }
     node = expr();
     expect(";");
     return node;

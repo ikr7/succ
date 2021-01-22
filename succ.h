@@ -57,6 +57,7 @@ typedef enum {
     ND_RETURN,
     ND_IF,
     ND_FOR,
+    ND_BLOCK,
 } NodeKind;
 
 typedef struct Node Node;
@@ -74,6 +75,8 @@ struct Node {
     Node* for_cond;
     Node* for_tick;
     Node* for_body;
+    Node* block_stmts;
+    Node* block_next;
 };
 
 Node* new_node(NodeKind kind, Node* lhs, Node* rhs);

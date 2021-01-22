@@ -48,5 +48,7 @@ assert 42 'if (1 == 1) return 42; else return 11;'
 assert 11 'if (1 == 0) return 42; else return 11;'
 assert 55 'n=10; sum=0; for (i=0; i<=n; i=i+1) sum=sum+i; return sum;'
 assert 10 'i=0; while(i<10) i=i+1; return i;'
+assert 42 'a=0; b=0; if (a == b) { a=40; b=2; } return a+b;'
+assert 55 'n=10; sum=0; for (i=0; i<=n; i=i+1) { sum=sum+i; } return sum;'
 
 echo OK
