@@ -64,6 +64,39 @@ void gen(Node* node) {
             }
             return;
         case ND_CALL:
+            if (node->function_arg != NULL) {
+                Node* arg = node->function_arg;
+                int arg_count = 0;
+                while (arg) {
+                    if (arg_count >= 6) {
+                        break;
+                    }
+                    gen(arg);
+                    printf("  pop rax\n");
+                    switch (arg_count) {
+                        case 0:
+                            printf("  mov rdi, rax\n");
+                            break;
+                        case 1:
+                            printf("  mov rsi, rax\n");
+                            break;
+                        case 2:
+                            printf("  mov rdx, rax\n");
+                            break;
+                        case 3:
+                            printf("  mov rcx, rax\n");
+                            break;
+                        case 4:
+                            printf("  mov r8d, rax\n");
+                            break;
+                        case 5:
+                            printf("  mov r9d, rax\n");
+                            break;
+                    }
+                    arg = arg->function_arg_next;
+                    arg_count++;
+                }
+            }
             printf("  call %.*s\n", node->function_len, node->function_name);
             printf("  push rax\n");
             return;

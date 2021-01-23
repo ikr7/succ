@@ -92,6 +92,8 @@ struct Node {
     // function call
     char* function_name;
     int function_len;
+    Node* function_arg;
+    Node* function_arg_next;
 };
 
 Node* new_node(NodeKind kind, Node* lhs, Node* rhs);

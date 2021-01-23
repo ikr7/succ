@@ -207,11 +207,22 @@ Node* primary() {
     Token* tok = consume_token(TK_IDENT);
     if (tok) {
         if (consume("(")) {
-            expect(")");
             Node* node = calloc(1, sizeof(Node));
             node->kind = ND_CALL;
             node->function_name = tok->str;
             node->function_len = tok->len;
+            if (consume(")")) {
+                return node;
+            }
+            Node* e = expr();
+            Node* args = e;
+            node->function_arg = args;
+            while (!consume(")")) {
+                expect(",");
+                e = expr();
+                args->function_arg_next = e;
+                args = e;
+            }
             return node;
         }
         Node* node = calloc(1, sizeof(Node));

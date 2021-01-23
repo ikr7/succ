@@ -8,9 +8,16 @@ void print_foo() {
 int ret21() {
     return 21;
 }
+int mul2(int n) {
+    return n * 2;
+}
+int add(int n, int m) {
+    return n + m;
+}
 EOF
 
 cc -c tmp2.c
+rm tmp2.c
 
 assert() {
     expected="$1"
@@ -78,5 +85,7 @@ assert 42 'a=0; b=0; if (a == b) { a=40; b=2; } return a+b;'
 assert 55 'n=10; sum=0; for (i=0; i<=n; i=i+1) { sum=sum+i; } return sum;'
 assert_output "foo" 'print_foo();'
 assert 42 'return ret21()*2;'
+assert 42 'return mul2(21);'
+assert 42 'a=31; b=11; return add(a, b);'
 
 echo OK
