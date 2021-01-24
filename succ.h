@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// tokenize
+// tokenize.c
 
 typedef enum {
     TK_RESERVED,
@@ -31,16 +31,18 @@ struct Token {
 
 void error(char* fmt, ...);
 void error_at(char* loc, char* fmt, ...);
-bool consume(char* op);
-void expect(char* op);
+
+Token* consume_token();
+bool consume_punct(char* op);
+void expect_punct(char* op);
 int expect_number();
 bool at_eof();
-bool is_alnum(char c);
+bool is_alnum_underscore(char c);
 
 Token* new_token(TokenKind kind, Token* cur, char* str, int len);
 Token* tokenize();
 
-// parse
+// parse.c
 
 typedef enum {
     ND_ADD,
@@ -66,13 +68,16 @@ typedef struct Node Node;
 struct Node {
     NodeKind kind;
 
-    // operators
+    // binary operators
     Node* lhs;
     Node* rhs;
 
     // variable
     int val;
     int offset;
+
+    // return
+    Node* return_body;
 
     // if
     Node* if_cond;
@@ -96,7 +101,7 @@ struct Node {
     Node* function_arg_next;
 };
 
-Node* new_node(NodeKind kind, Node* lhs, Node* rhs);
+Node* new_node_binop(NodeKind kind, Node* lhs, Node* rhs);
 Node* new_node_num(int val);
 Node* new_node_if(Node* cond, Node* true_stmt, Node* false_stmt);
 Node* new_node_for(Node* for_init, Node* for_cond, Node* for_tick, Node* for_body);
@@ -112,11 +117,6 @@ struct LVar {
 
 LVar* find_lvar(Token* tok);
 
-extern Node* code[];
-extern LVar* locals;
-
-extern int offset;
-
 void program();
 Node* stmt();
 Node* expr();
@@ -128,16 +128,17 @@ Node* mul();
 Node* unary();
 Node* primary();
 
-Token* consume_token();
-
-// codegen
+// codegen.c
 
 void gen(Node* node);
 void gen_lval(Node* node);
 
-// main
+// main.c
 
 int dump_tokens();
 
+extern Node* code[];
+extern LVar* locals;
+extern int offset;
 extern Token *token;
 extern char* user_input;

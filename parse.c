@@ -1,6 +1,6 @@
 #include "succ.h"
 
-Node* new_node(NodeKind kind, Node* lhs, Node* rhs) {
+Node* new_node_binop(NodeKind kind, Node* lhs, Node* rhs) {
     Node* node = calloc(1, sizeof(Node));
     node->kind = kind;
     node->lhs = lhs;
@@ -34,8 +34,6 @@ Node* new_node_for(Node* for_init, Node* for_cond, Node* for_tick, Node* for_bod
     return node;
 };
 
-LVar* locals;
-
 LVar* find_lvar(Token* tok) {
     for (LVar* var = locals; var; var = var->next) {
         if (var->len == tok->len && strncmp(var->name, tok->str, var->len) == 0) {
@@ -45,11 +43,9 @@ LVar* find_lvar(Token* tok) {
     return NULL;
 }
 
-Node* code[100];
-
 void program() {
     int i = 0;
-    while (token->kind != TK_EOF) {;
+    while (!at_eof()) {;
         code[i++] = stmt();
     }
     code[i] = NULL;
@@ -60,14 +56,14 @@ Node* stmt() {
     if (consume_token(TK_RETURN)) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
-        node->lhs = expr();
-        expect(";");
+        node->return_body = expr();
+        expect_punct(";");
         return node;
     }
     if (consume_token(TK_IF)) {
-        expect("(");
+        expect_punct("(");
         Node* cond = expr();
-        expect(")");
+        expect_punct(")");
         Node* true_stmt = stmt();
         if (consume_token(TK_ELSE)) {
             Node* false_stmt = stmt();
@@ -80,31 +76,31 @@ Node* stmt() {
         Node* cond;
         Node* tick;
         Node* body;
-        expect("(");
+        expect_punct("(");
         init = expr();
-        expect(";");
+        expect_punct(";");
         cond = expr();
-        expect(";");
+        expect_punct(";");
         tick = expr();
-        expect(")");
+        expect_punct(")");
         body = stmt();
         return new_node_for(init, cond, tick, body);
     }
     if (consume_token(TK_WHILE)) {
         Node* cond;
         Node* body;
-        expect("(");
+        expect_punct("(");
         cond = expr();
-        expect(")");
+        expect_punct(")");
         body = stmt();
         return new_node_for(new_node_num(0), cond, new_node_num(0), body);
     }
-    if (consume("{")) {
+    if (consume_punct("{")) {
         Node* node = calloc(1, sizeof(Node));
         Node* stmts = calloc(1, sizeof(Node));
         node->kind = ND_BLOCK;
         node->block_stmts = stmts;
-        while (!consume("}")) {
+        while (!consume_punct("}")) {
             Node* s = stmt();
             stmts->block_next = s;
             stmts = s;
@@ -113,7 +109,7 @@ Node* stmt() {
         return node;
     }
     node = expr();
-    expect(";");
+    expect_punct(";");
     return node;
 }
 
@@ -124,8 +120,8 @@ Node* expr() {
 
 Node* assign() {
     Node* node = equality();
-    if (consume("=")) {
-        node = new_node(ND_ASSIGN, node, assign());
+    if (consume_punct("=")) {
+        node = new_node_binop(ND_ASSIGN, node, assign());
     }
     return node;
 }
@@ -133,10 +129,10 @@ Node* assign() {
 Node* equality() {
     Node* node = relational();
     for (;;) {
-        if (consume("==")) {
-            node = new_node(ND_EQ, node, relational());
-        } else if (consume("!=")) {
-            node = new_node(ND_NE, node, relational());
+        if (consume_punct("==")) {
+            node = new_node_binop(ND_EQ, node, relational());
+        } else if (consume_punct("!=")) {
+            node = new_node_binop(ND_NE, node, relational());
         } else {
             return node;
         }
@@ -146,14 +142,14 @@ Node* equality() {
 Node* relational() {
     Node* node = add();
     for (;;) {
-        if (consume("<")) {
-            node = new_node(ND_LT, node, add());
-        } else if (consume("<=")) {
-            node = new_node(ND_LE, node, add());
-        } else if (consume(">")) {
-            node = new_node(ND_LT, add(), node);
-        } else if (consume(">=")) {
-            node = new_node(ND_LE, add(), node);
+        if (consume_punct("<")) {
+            node = new_node_binop(ND_LT, node, add());
+        } else if (consume_punct("<=")) {
+            node = new_node_binop(ND_LE, node, add());
+        } else if (consume_punct(">")) {
+            node = new_node_binop(ND_LT, add(), node);
+        } else if (consume_punct(">=")) {
+            node = new_node_binop(ND_LE, add(), node);
         } else {
             return node;
         }
@@ -163,10 +159,10 @@ Node* relational() {
 Node* add() {
     Node* node = mul();
     for (;;) {
-        if (consume("+")) {
-            node = new_node(ND_ADD, node, mul());
-        } else if (consume("-")) {
-            node = new_node(ND_SUB, node, mul());
+        if (consume_punct("+")) {
+            node = new_node_binop(ND_ADD, node, mul());
+        } else if (consume_punct("-")) {
+            node = new_node_binop(ND_SUB, node, mul());
         } else {
             return node;
         }
@@ -176,10 +172,10 @@ Node* add() {
 Node* mul() {
     Node* node = unary();
     for (;;) {
-        if (consume("*")) {
-            node = new_node(ND_MUL, node, unary());
-        } else if (consume("/")) {
-            node = new_node(ND_DIV, node, unary());
+        if (consume_punct("*")) {
+            node = new_node_binop(ND_MUL, node, unary());
+        } else if (consume_punct("/")) {
+            node = new_node_binop(ND_DIV, node, unary());
         } else {
             return node;
         }
@@ -187,38 +183,36 @@ Node* mul() {
 }
 
 Node* unary() {
-    if (consume("+")) {
+    if (consume_punct("+")) {
         return primary();
     }
-    if (consume("-")) {
-        return new_node(ND_SUB, new_node_num(0), primary());
+    if (consume_punct("-")) {
+        return new_node_binop(ND_SUB, new_node_num(0), primary());
     }
     return primary();
 }
 
-int offset = 0;
-
 Node* primary() {
-    if (consume("(")) {
+    if (consume_punct("(")) {
         Node* node = expr();
-        expect(")");
+        expect_punct(")");
         return node;
     }
     Token* tok = consume_token(TK_IDENT);
     if (tok) {
-        if (consume("(")) {
+        if (consume_punct("(")) {
             Node* node = calloc(1, sizeof(Node));
             node->kind = ND_CALL;
             node->function_name = tok->str;
             node->function_len = tok->len;
-            if (consume(")")) {
+            if (consume_punct(")")) {
                 return node;
             }
             Node* e = expr();
             Node* args = e;
             node->function_arg = args;
-            while (!consume(")")) {
-                expect(",");
+            while (!consume_punct(")")) {
+                expect_punct(",");
                 e = expr();
                 args->function_arg_next = e;
                 args = e;
@@ -243,13 +237,4 @@ Node* primary() {
         return node;
     }
     return new_node_num(expect_number());
-}
-
-Token* consume_token(TokenKind kind) {
-    Token* t = token;
-    if (t->kind == kind) {
-        token = token-> next;
-        return t;
-    }
-    return NULL;
 }

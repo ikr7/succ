@@ -20,7 +20,16 @@ void error_at(char* loc, char* fmt, ...) {
     exit(1);
 }
 
-bool consume(char* op) {
+Token* consume_token(TokenKind kind) {
+    Token* t = token;
+    if (t->kind == kind) {
+        token = token-> next;
+        return t;
+    }
+    return NULL;
+}
+
+bool consume_punct(char* op) {
     if (
         token->kind != TK_RESERVED ||
         strlen(op) != token->len ||
@@ -32,7 +41,7 @@ bool consume(char* op) {
     return true;
 }
 
-void expect(char* op) {
+void expect_punct(char* op) {
     if (
         token->kind != TK_RESERVED ||
         strlen(op) != token->len ||
@@ -52,7 +61,11 @@ int expect_number() {
     return val;
 }
 
-bool is_alnum(char c) {
+bool at_eof() {
+    return token->kind == TK_EOF;
+}
+
+bool is_alnum_underscore(char c) {
     return (
         'a' <= c && c <= 'z' ||
         'A' <= c && c <= 'Z' ||
@@ -108,27 +121,27 @@ Token* tokenize() {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }
-        if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
+        if (strncmp(p, "return", 6) == 0 && !is_alnum_underscore(p[6])) {
             cur = new_token(TK_RETURN, cur, p, 6);
             p += 6;
             continue;
         }
-        if (strncmp(p, "if", 2) == 0 && !is_alnum(p[2])) {
+        if (strncmp(p, "if", 2) == 0 && !is_alnum_underscore(p[2])) {
             cur = new_token(TK_IF, cur, p, 2);
             p += 2;
             continue;
         }
-        if (strncmp(p, "else", 4) == 0 && !is_alnum(p[4])) {
+        if (strncmp(p, "else", 4) == 0 && !is_alnum_underscore(p[4])) {
             cur = new_token(TK_ELSE, cur, p, 4);
             p += 4;
             continue;
         }
-        if (strncmp(p, "for", 3) == 0 && !is_alnum(p[3])) {
+        if (strncmp(p, "for", 3) == 0 && !is_alnum_underscore(p[3])) {
             cur = new_token(TK_FOR, cur, p, 3);
             p += 3;
             continue;
         }
-        if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+        if (strncmp(p, "while", 5) == 0 && !is_alnum_underscore(p[5])) {
             cur = new_token(TK_WHILE, cur, p, 5);
             p += 5;
             continue;
