@@ -32,7 +32,7 @@ struct Token {
 void error(char* fmt, ...);
 void error_at(char* loc, char* fmt, ...);
 
-Token* consume_token();
+Token* consume_token(TokenKind kind);
 bool consume_punct(char* op);
 void expect_punct(char* op);
 int expect_number();
@@ -130,7 +130,9 @@ Node* primary();
 
 // codegen.c
 
-void gen(Node* node);
+void gen();
+void gen_node(Node* node);
+void gen_binop(Node* node);
 void gen_lval(Node* node);
 
 // main.c
