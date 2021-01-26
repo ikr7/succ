@@ -33,6 +33,7 @@ void error(char* fmt, ...);
 void error_at(char* loc, char* fmt, ...);
 
 Token* consume_token(TokenKind kind);
+Token* expect_token(TokenKind kind);
 bool consume_punct(char* op);
 void expect_punct(char* op);
 int expect_number();
@@ -115,9 +116,20 @@ struct LVar {
     int offset;
 };
 
-LVar* find_lvar(Token* tok);
+LVar* find_lvar(LVar* locals, Token* tok);
+
+typedef struct Func Func;
+
+struct Func {
+    char* name;
+    int len;
+    int offset;
+    LVar* locals;
+    Node* body;
+};
 
 void program();
+Func* funcdef();
 Node* stmt();
 Node* expr();
 Node* assign();
@@ -131,6 +143,7 @@ Node* primary();
 // codegen.c
 
 void gen();
+void gen_func(Func* func);
 void gen_node(Node* node);
 void gen_binop(Node* node);
 void gen_lval(Node* node);
@@ -139,8 +152,7 @@ void gen_lval(Node* node);
 
 int dump_tokens();
 
-extern Node* code[];
-extern LVar* locals;
-extern int offset;
+extern Func* code[];
+extern Func* cur_func;
 extern Token *token;
 extern char* user_input;

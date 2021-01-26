@@ -6,16 +6,22 @@ void gen() {
 
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
-    printf("main:\n");
+
+    for (int i = 0; code[i]; i++) {
+        gen_func(code[i]);
+    }
+
+}
+
+void gen_func(Func* func) {
+
+    printf("%.*s:\n", func->len, func->name);
 
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
-    printf("  sub rsp, %d\n", offset);
+    printf("  sub rsp, %d\n", func->offset);
 
-    for (int i = 0; code[i]; i++) {
-        gen_node(code[i]);
-        printf("  pop rax\n");
-    }
+    gen_node(func->body);
 
     printf("  mov rsp, rbp\n");
     printf("  pop rbp\n");
@@ -91,7 +97,6 @@ void gen_node(Node* node) {
             Node *cur = node->block_stmts;
             while (cur) {
                 gen_node(cur);
-                printf("  pop rax\n");
                 cur = cur->block_next;
             }
             return;

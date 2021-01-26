@@ -1,8 +1,7 @@
 #include "succ.h"
 
-Node* code[100];
-LVar* locals;
-int offset = 0;
+Func* code[100];
+Func* cur_func;
 Token *token;
 char* user_input;
 

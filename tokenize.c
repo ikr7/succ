@@ -29,6 +29,15 @@ Token* consume_token(TokenKind kind) {
     return NULL;
 }
 
+Token* expect_token(TokenKind kind) {
+    Token* t = token;
+    if (t->kind != kind) {
+        error_at(t->str, "unexpected token");
+    }
+    token = token-> next;
+    return t;
+}
+
 bool consume_punct(char* op) {
     if (
         token->kind != TK_RESERVED ||
