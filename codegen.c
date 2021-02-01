@@ -21,6 +21,39 @@ void gen_func(Func* func) {
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, %d\n", func->offset);
 
+    LVar* arg = func->args;
+    int arg_count = 0;
+    while (arg && arg_count < 6) {
+
+        printf("  mov rax, rbp\n");
+        printf("  sub rax, %d\n", arg->offset);
+
+        switch (arg_count) {
+            case 0:
+                printf("  mov [rax], rdi\n");
+                break;
+            case 1:
+                printf("  mov [rax], rsi\n");
+                break;
+            case 2:
+                printf("  mov [rax], rdx\n");
+                break;
+            case 3:
+                printf("  mov [rax], rcx\n");
+                break;
+            case 4:
+                printf("  mov [rax], r8\n");
+                break;
+            case 5:
+                printf("  mov [rax], r9\n");
+                break;
+        }
+
+        arg = arg->next;
+        arg_count++;
+        
+    }
+
     gen_node(func->body);
 
     printf("  mov rsp, rbp\n");
@@ -125,10 +158,10 @@ void gen_node(Node* node) {
                             printf("  mov rcx, rax\n");
                             break;
                         case 4:
-                            printf("  mov r8d, rax\n");
+                            printf("  mov r8, rax\n");
                             break;
                         case 5:
-                            printf("  mov r9d, rax\n");
+                            printf("  mov r9, rax\n");
                             break;
                     }
                     arg = arg->function_arg_next;

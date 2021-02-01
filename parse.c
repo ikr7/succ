@@ -34,9 +34,9 @@ Node* new_node_for(Node* for_init, Node* for_cond, Node* for_tick, Node* for_bod
     return node;
 };
 
-LVar* find_lvar(LVar* locals, Token* tok) {
+LVar* find_lvar(LVar* locals, char* name, int len) {
     for (LVar* var = locals; var; var = var->next) {
-        if (var->len == tok->len && strncmp(var->name, tok->str, var->len) == 0) {
+        if (var->len == len && strncmp(var->name, name, len) == 0) {
             return var;
         }
     }
@@ -57,8 +57,39 @@ Func* funcdef() {
     Token* ident = expect_token(TK_IDENT);
     func->name = ident->str;
     func->len = ident->len;
+
     expect_punct("(");
-    expect_punct(")");
+
+    if (!consume_punct(")")) {
+        
+        Token* tok = expect_token(TK_IDENT);
+        LVar* arg = calloc(1, sizeof(LVar));
+        
+        arg->name = tok->str;
+        arg->len = tok->len;
+        arg->offset = func->offset + 8;
+        
+        func->offset += 8;
+        func->args = arg;
+
+        LVar* cur = arg;
+
+        while (!consume_punct(")")) {
+            expect_punct(",");
+            tok = expect_token(TK_IDENT);
+            arg = calloc(1, sizeof(LVar));
+            arg->name = tok->str;
+            arg->len = tok->len;
+            cur->next = arg;
+            arg->offset = func->offset + 8;
+            func->offset += 8;
+            cur = arg;
+        }
+
+        func->locals = func->args;
+
+    }
+
     expect_punct("{");
     Node* body = calloc(1, sizeof(Node));
     Node* stmts = calloc(1, sizeof(Node));
@@ -244,7 +275,7 @@ Node* primary() {
         }
         Node* node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
-        LVar* lvar = find_lvar(cur_func->locals, tok);
+        LVar* lvar = find_lvar(cur_func->locals, tok->str, tok->len);
         if (lvar) {
             node->offset = lvar->offset;
         } else {

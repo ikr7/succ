@@ -90,5 +90,8 @@ assert 42 'main() { a=31; b=11; return add(a, b); }'
 assert 42 'main(){return 42;}'
 assert 42 'main(){a=42; return 42;}'
 assert 5 'main(){return fn();} fn(){a=5;return a;}'
+assert 55 'main() { return fib(9); } fib(x) { if (x<=1) return 1; return fib(x-1) + fib(x-2); }'
+assert 32 'main() { return func(1,2); } func(a,b) { c=5; d=6; return c*d+a*b; }'
+assert 21 'main() { return addall(1,2,3,4,5,6); } addall(a,b,c,d,e,f) { return a+b+c+d+e+f; }'
 
 echo OK

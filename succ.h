@@ -116,7 +116,7 @@ struct LVar {
     int offset;
 };
 
-LVar* find_lvar(LVar* locals, Token* tok);
+LVar* find_lvar(LVar* locals, char* name, int len);
 
 typedef struct Func Func;
 
@@ -124,6 +124,7 @@ struct Func {
     char* name;
     int len;
     int offset;
+    LVar* args;
     LVar* locals;
     Node* body;
 };
