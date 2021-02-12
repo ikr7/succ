@@ -95,5 +95,7 @@ assert 32 'main() { return func(1,2); } func(a,b) { c=5; d=6; return c*d+a*b; }'
 assert 21 'main() { return addall(1,2,3,4,5,6); } addall(a,b,c,d,e,f) { return a+b+c+d+e+f; }'
 assert 3 'main() { x=3; y=&x; return *y; }'
 assert 3 'main() { x=3; y=5; z=&y+8; return *z; }'
+assert 10 'main() { i=0; for(;i<10;){i=i+1;} return i; }'
+assert 10 'main() { i=0; for(;i<10;i=i+1){} return i; }'
 
 echo OK

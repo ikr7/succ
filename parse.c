@@ -131,12 +131,24 @@ Node* stmt() {
         Node* tick;
         Node* body;
         expect_punct("(");
-        init = expr();
-        expect_punct(";");
-        cond = expr();
-        expect_punct(";");
-        tick = expr();
-        expect_punct(")");
+        if (!consume_punct(";")) {
+            init = expr();
+            expect_punct(";");
+        } else {
+            init = new_node_num(1);
+        }
+        if (!consume_punct(";")) {
+            cond = expr();
+            expect_punct(";");
+        } else {
+            cond = new_node_num(1);
+        }
+        if (!consume_punct(")")) {
+            tick = expr();
+            expect_punct(")");
+        } else {
+            tick = new_node_num(1);
+        }
         body = stmt();
         return new_node_for(init, cond, tick, body);
     }
