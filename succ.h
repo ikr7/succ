@@ -36,12 +36,12 @@ Token* consume_token(TokenKind kind);
 Token* expect_token(TokenKind kind);
 bool consume_punct(char* op);
 void expect_punct(char* op);
-int expect_number();
-bool at_eof();
+int expect_number(void);
+bool at_eof(void);
 bool is_alnum_underscore(char c);
 
 Token* new_token(TokenKind kind, Token* cur, char* str, int len);
-Token* tokenize();
+Token* tokenize(void);
 
 // parse.c
 
@@ -131,21 +131,21 @@ struct Func {
     Node* body;
 };
 
-void program();
-Func* funcdef();
-Node* stmt();
-Node* expr();
-Node* assign();
-Node* equality();
-Node* relational();
-Node* add();
-Node* mul();
-Node* unary();
-Node* primary();
+void program(void);
+Func* funcdef(void);
+Node* stmt(void);
+Node* expr(void);
+Node* assign(void);
+Node* equality(void);
+Node* relational(void);
+Node* add(void);
+Node* mul(void);
+Node* unary(void);
+Node* primary(void);
 
 // codegen.c
 
-void gen();
+void gen(void);
 void gen_func(Func* func);
 void gen_node(Node* node);
 void gen_binop(Node* node);
@@ -153,7 +153,7 @@ void gen_lval(Node* node);
 
 // main.c
 
-int dump_tokens();
+int dump_tokens(void);
 
 extern Func* code[];
 extern Func* cur_func;

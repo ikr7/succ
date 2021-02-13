@@ -61,7 +61,7 @@ void expect_punct(char* op) {
     token = token-> next;
 }
 
-int expect_number() {
+int expect_number(void) {
     if (token->kind != TK_NUM) {
         error_at(token->str, "Not a number");
     }
@@ -70,7 +70,7 @@ int expect_number() {
     return val;
 }
 
-bool at_eof() {
+bool at_eof(void) {
     return token->kind == TK_EOF;
 }
 
@@ -92,7 +92,7 @@ Token* new_token(TokenKind kind, Token* cur, char* str, int len) {
     return tok;
 }
 
-Token* tokenize() {
+Token* tokenize(void) {
     char* p = user_input;
     Token head;
     head.next = NULL;

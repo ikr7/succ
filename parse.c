@@ -43,7 +43,7 @@ LVar* find_lvar(LVar* locals, char* name, int len) {
     return NULL;
 }
 
-void program() {
+void program(void) {
     int i = 0;
     while (!at_eof()) {;
         code[i++] = funcdef();
@@ -51,7 +51,7 @@ void program() {
     code[i] = NULL;
 }
 
-Func* funcdef() {
+Func* funcdef(void) {
     Func* func = calloc(1, sizeof(Func));
     cur_func = func;
     Token* ident = expect_token(TK_IDENT);
@@ -105,7 +105,7 @@ Func* funcdef() {
     return func;
 }
 
-Node* stmt() {
+Node* stmt(void) {
     Node* node;
     if (consume_token(TK_RETURN)) {
         node = calloc(1, sizeof(Node));
@@ -179,12 +179,12 @@ Node* stmt() {
     return node;
 }
 
-Node* expr() {
+Node* expr(void) {
     Node* node = assign();
     return node;
 }
 
-Node* assign() {
+Node* assign(void) {
     Node* node = equality();
     if (consume_punct("=")) {
         node = new_node_binop(ND_ASSIGN, node, assign());
@@ -192,7 +192,7 @@ Node* assign() {
     return node;
 }
 
-Node* equality() {
+Node* equality(void) {
     Node* node = relational();
     for (;;) {
         if (consume_punct("==")) {
@@ -205,7 +205,7 @@ Node* equality() {
     }
 }
 
-Node* relational() {
+Node* relational(void) {
     Node* node = add();
     for (;;) {
         if (consume_punct("<")) {
@@ -222,7 +222,7 @@ Node* relational() {
     }
 }
 
-Node* add() {
+Node* add(void) {
     Node* node = mul();
     for (;;) {
         if (consume_punct("+")) {
@@ -235,7 +235,7 @@ Node* add() {
     }
 }
 
-Node* mul() {
+Node* mul(void) {
     Node* node = unary();
     for (;;) {
         if (consume_punct("*")) {
@@ -248,7 +248,7 @@ Node* mul() {
     }
 }
 
-Node* unary() {
+Node* unary(void) {
     if (consume_punct("+")) {
         return primary();
     }
@@ -270,7 +270,7 @@ Node* unary() {
     return primary();
 }
 
-Node* primary() {
+Node* primary(void) {
     if (consume_punct("(")) {
         Node* node = expr();
         expect_punct(")");

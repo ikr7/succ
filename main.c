@@ -5,7 +5,7 @@ Func* cur_func;
 Token *token;
 char* user_input;
 
-int dump_tokens() {
+int dump_tokens(void) {
     while (token->kind != TK_EOF) {
         printf("%.*s\t%d\n", token->len, token->str, token->kind);
         token = token->next;

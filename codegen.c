@@ -2,7 +2,7 @@
 
 int label_count = 0;
 
-void gen() {
+void gen(void) {
 
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
