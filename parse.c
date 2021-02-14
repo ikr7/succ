@@ -52,6 +52,7 @@ void program(void) {
 }
 
 Func* funcdef(void) {
+    expect_punct("int");
     Func* func = calloc(1, sizeof(Func));
     cur_func = func;
     Token* ident = expect_token(TK_IDENT);
@@ -62,6 +63,7 @@ Func* funcdef(void) {
 
     if (!consume_punct(")")) {
         
+        expect_punct("int");
         Token* tok = expect_token(TK_IDENT);
         LVar* arg = calloc(1, sizeof(LVar));
         
@@ -76,6 +78,7 @@ Func* funcdef(void) {
 
         while (!consume_punct(")")) {
             expect_punct(",");
+            expect_punct("int");
             tok = expect_token(TK_IDENT);
             arg = calloc(1, sizeof(LVar));
             arg->name = tok->str;
@@ -107,6 +110,23 @@ Func* funcdef(void) {
 
 Node* stmt(void) {
     Node* node;
+    if (consume_punct("int")) {
+        Token* ident = expect_token(TK_IDENT);
+        expect_punct(";");
+        LVar* lvar = find_lvar(cur_func->locals, ident->str, ident->len);
+        if (lvar) {
+            error_at(ident->str, "%.*s is already declared", ident->len, ident->str);
+        } else {
+            lvar = calloc(1, sizeof(LVar));
+            lvar->next = cur_func->locals;
+            lvar->name = ident->str;
+            lvar->len = ident->len;
+            lvar->offset = cur_func->offset + 8;
+            cur_func->locals = lvar;
+            cur_func->offset += 8;
+        }
+        return new_node_num(1);
+    }
     if (consume_token(TK_RETURN)) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
@@ -303,14 +323,7 @@ Node* primary(void) {
         if (lvar) {
             node->offset = lvar->offset;
         } else {
-            lvar = calloc(1, sizeof(LVar));
-            lvar->next = cur_func->locals;
-            lvar->name = tok->str;
-            lvar->len = tok->len;
-            lvar->offset = cur_func->offset + 8;
-            node->offset = lvar->offset;
-            cur_func->locals = lvar;
-            cur_func->offset += 8;
+            error_at(tok->str, "%.*s is not declared yet", tok->len, tok->str);
         }
         return node;
     }
