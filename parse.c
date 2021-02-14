@@ -51,13 +51,29 @@ void program(void) {
     code[i] = NULL;
 }
 
+Type* typename(void) {
+    if (consume_punct("int")) {
+        Type* type = calloc(1, sizeof(Type));
+        type->type = INT;
+        while (consume_punct("*")) {
+            Type* t = calloc(1, sizeof(Type));
+            t->type = PTR;
+            t->ptr_to = type;
+            type = t;
+        }
+        return type;
+    }
+    return NULL;
+}
+
 Func* funcdef(void) {
-    expect_punct("int");
+    Type* return_type = typename();
     Func* func = calloc(1, sizeof(Func));
     cur_func = func;
     Token* ident = expect_token(TK_IDENT);
     func->name = ident->str;
     func->len = ident->len;
+    func->return_type = return_type;
 
     expect_punct("(");
 
@@ -78,11 +94,12 @@ Func* funcdef(void) {
 
         while (!consume_punct(")")) {
             expect_punct(",");
-            expect_punct("int");
+            Type* type = typename();
             tok = expect_token(TK_IDENT);
             arg = calloc(1, sizeof(LVar));
             arg->name = tok->str;
             arg->len = tok->len;
+            arg->type = type;
             cur->next = arg;
             arg->offset = func->offset + 8;
             func->offset += 8;
@@ -110,7 +127,8 @@ Func* funcdef(void) {
 
 Node* stmt(void) {
     Node* node;
-    if (consume_punct("int")) {
+    Type* type;
+    if (type = typename()) {
         Token* ident = expect_token(TK_IDENT);
         expect_punct(";");
         LVar* lvar = find_lvar(cur_func->locals, ident->str, ident->len);
@@ -121,6 +139,7 @@ Node* stmt(void) {
             lvar->next = cur_func->locals;
             lvar->name = ident->str;
             lvar->len = ident->len;
+            lvar->type = type;
             lvar->offset = cur_func->offset + 8;
             cur_func->locals = lvar;
             cur_func->offset += 8;
@@ -321,7 +340,7 @@ Node* primary(void) {
         node->kind = ND_LVAR;
         LVar* lvar = find_lvar(cur_func->locals, tok->str, tok->len);
         if (lvar) {
-            node->offset = lvar->offset;
+            node->lvar = lvar;
         } else {
             error_at(tok->str, "%.*s is not declared yet", tok->len, tok->str);
         }

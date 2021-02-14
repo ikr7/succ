@@ -66,6 +66,25 @@ typedef enum {
     ND_ADDR,
 } NodeKind;
 
+typedef struct Type Type;
+
+struct Type {
+    enum { INT, PTR } type;
+    Type* ptr_to;
+};
+
+typedef struct LVar LVar;
+
+struct LVar {
+    LVar* next;
+    char* name;
+    int len;
+    int offset;
+    Type* type;
+};
+
+LVar* find_lvar(LVar* locals, char* name, int len);
+
 typedef struct Node Node;
 
 struct Node {
@@ -76,8 +95,8 @@ struct Node {
     Node* rhs;
 
     // variable
+    LVar* lvar;
     int val;
-    int offset;
 
     // return
     Node* return_body;
@@ -109,17 +128,6 @@ Node* new_node_num(int val);
 Node* new_node_if(Node* cond, Node* true_stmt, Node* false_stmt);
 Node* new_node_for(Node* for_init, Node* for_cond, Node* for_tick, Node* for_body);
 
-typedef struct LVar LVar;
-
-struct LVar {
-    LVar* next;
-    char* name;
-    int len;
-    int offset;
-};
-
-LVar* find_lvar(LVar* locals, char* name, int len);
-
 typedef struct Func Func;
 
 struct Func {
@@ -129,6 +137,7 @@ struct Func {
     LVar* args;
     LVar* locals;
     Node* body;
+    Type* return_type;
 };
 
 void program(void);

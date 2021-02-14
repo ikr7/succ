@@ -97,5 +97,8 @@ assert 3  'int main() { int x; int y; x=3; y=&x; return *y; }'
 assert 3  'int main() { int x; int y; int z; x=3; y=5; z=&y+8; return *z; }'
 assert 10 'int main() { int i; i=0; for(;i<10;){i=i+1;} return i; }'
 assert 10 'int main() { int i; i=0; for(;i<10;i=i+1){} return i; }'
+assert 42 'int main() { int a; int *b; b = &a; *b = 42; return a; }'
+assert 42 'int main() { int a; int *b; int **c; b = &a; c = &b; **c = 42; return a; }'
+assert 42 'int main() { int a; int *b; int **c; int ***d; b = &a; c = &b; d = &c; ***d = 42; return a; }'
 
 echo OK

@@ -233,10 +233,15 @@ void gen_binop(Node* node) {
 }
 
 void gen_lval(Node* node) {
-    if (node->kind != ND_LVAR) {
-        error("assignment to non-variable");
+    if (node->kind == ND_LVAR) {
+        printf("  mov rax, rbp\n");
+        printf("  sub rax, %d\n", node->lvar->offset);
+        printf("  push rax\n");
+        return;
     }
-    printf("  mov rax, rbp\n");
-    printf("  sub rax, %d\n", node->offset);
-    printf("  push rax\n");
+    if (node->kind == ND_DEREF) {
+        gen_node(node->lhs);
+        return;
+    }
+    error("assignment to non-variable");
 }
