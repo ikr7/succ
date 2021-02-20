@@ -68,6 +68,9 @@ Type* typename(void) {
 
 Func* funcdef(void) {
     Type* return_type = typename();
+    if (!return_type) {
+        error("syntax error");
+    }
     Func* func = calloc(1, sizeof(Func));
     cur_func = func;
     Token* ident = expect_token(TK_IDENT);
