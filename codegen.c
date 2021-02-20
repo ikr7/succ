@@ -227,9 +227,41 @@ void gen_binop(Node* node) {
             }
             error("incompatible operands for `+`");
         }
-        case ND_SUB:
-            printf("  sub rax, rdi\n");
-            break;
+        case ND_SUB: {
+            Type* lhs_type = get_type(node->lhs);
+            Type* rhs_type = get_type(node->rhs);
+            // int - int
+            if (lhs_type->type == TP_INT && rhs_type->type == TP_INT) {
+                printf("  sub rax, rdi\n");
+                break;
+            }
+            // ptr - int
+            if (lhs_type->type == TP_PTR && rhs_type->type == TP_INT) {
+                if (lhs_type->ptr_to->type == TP_INT) {
+                    printf("  imul rdi, 4\n");
+                }
+                if (lhs_type->ptr_to->type == TP_PTR) {
+                    printf("  imul rdi, 8\n");
+                }
+                printf("  sub rax, rdi\n");
+                break;
+            }
+            // ptr - ptr
+            if (lhs_type->type == TP_PTR && rhs_type->type == TP_PTR) {
+                printf("  sub rax, rdi\n");
+                printf("  cqo\n");
+                if (lhs_type->ptr_to->type == TP_INT) {
+                    printf("  mov rdi, 4\n");
+                    printf("  idiv rdi\n");
+                }
+                if (lhs_type->ptr_to->type == TP_PTR) {
+                    printf("  mov rdi, 8\n");
+                    printf("  idiv rdi\n");
+                }
+                break;
+            }
+            error("incompatible operands for `-`");
+        }
         case ND_MUL:
             printf("  imul rax, rdi\n");
             break;

@@ -109,5 +109,7 @@ assert 42 'int main() { int a; int *b; b = &a; *b = 42; return a; }'
 assert 42 'int main() { int a; int *b; int **c; b = &a; c = &b; **c = 42; return a; }'
 assert 42 'int main() { int a; int *b; int **c; int ***d; b = &a; c = &b; d = &c; ***d = 42; return a; }'
 assert 3 'int main() { int *p; alloc4(&p, 2, 3, 5, 7); int *q; q = p + 1; return *q; }'
+assert 2 'int main() { int *p; int *q; alloc4(&p, 2, 3, 5, 7); q = p + 2; return q - p; }'
+assert 5 'int main() { int *p; int *q; alloc4(&p, 2, 3, 5, 7); q = p + 3; q = q - 1; return *q; }'
 
 echo OK
