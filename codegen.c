@@ -225,6 +225,7 @@ void gen_binop(Node* node) {
                 printf("  add rax, rdi\n");
                 break;
             }
+            error("incompatible operands for `+`");
         }
         case ND_SUB:
             printf("  sub rax, rdi\n");
