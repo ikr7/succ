@@ -65,6 +65,8 @@ void gen_func(Func* func) {
 void gen_node(Node* node) {
 
     switch (node->kind) {
+        case ND_NOP:
+            return;
         case ND_ADD:
         case ND_SUB:
         case ND_MUL:
@@ -193,9 +195,37 @@ void gen_binop(Node* node) {
     printf("  pop rax\n");
 
     switch (node->kind) {
-        case ND_ADD:
-            printf("  add rax, rdi\n");
-            break;
+        case ND_ADD: {
+            Type* lhs_type = get_type(node->lhs);
+            Type* rhs_type = get_type(node->rhs);
+            // int + int
+            if (lhs_type->type == TP_INT && rhs_type->type == TP_INT) {
+                printf("  add rax, rdi\n");
+                break;
+            }
+            // int + ptr
+            if (lhs_type->type == TP_INT && rhs_type->type == TP_PTR) {
+                if (rhs_type->ptr_to->type == TP_INT) {
+                    printf("  imul rax, 4\n");
+                }
+                if (rhs_type->ptr_to->type == TP_PTR) {
+                    printf("  imul rax, 8\n");
+                }
+                printf("  add rax, rdi\n");
+                break;
+            }
+            // ptr + int
+            if (lhs_type->type == TP_PTR && rhs_type->type == TP_INT) {
+                if (lhs_type->ptr_to->type == TP_INT) {
+                    printf("  imul rdi, 4\n");
+                }
+                if (lhs_type->ptr_to->type == TP_PTR) {
+                    printf("  imul rdi, 8\n");
+                }
+                printf("  add rax, rdi\n");
+                break;
+            }
+        }
         case ND_SUB:
             printf("  sub rax, rdi\n");
             break;

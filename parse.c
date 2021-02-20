@@ -54,10 +54,10 @@ void program(void) {
 Type* typename(void) {
     if (consume_punct("int")) {
         Type* type = calloc(1, sizeof(Type));
-        type->type = INT;
+        type->type = TP_INT;
         while (consume_punct("*")) {
             Type* t = calloc(1, sizeof(Type));
-            t->type = PTR;
+            t->type = TP_PTR;
             t->ptr_to = type;
             type = t;
         }
@@ -79,12 +79,13 @@ Func* funcdef(void) {
 
     if (!consume_punct(")")) {
         
-        expect_punct("int");
+        Type* argtype = typename();
         Token* tok = expect_token(TK_IDENT);
         LVar* arg = calloc(1, sizeof(LVar));
         
         arg->name = tok->str;
         arg->len = tok->len;
+        arg->type = argtype;
         arg->offset = func->offset + 8;
         
         func->offset += 8;
@@ -144,7 +145,9 @@ Node* stmt(void) {
             cur_func->locals = lvar;
             cur_func->offset += 8;
         }
-        return new_node_num(1);
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_NOP;
+        return node;
     }
     if (consume_token(TK_RETURN)) {
         node = calloc(1, sizeof(Node));
@@ -347,4 +350,40 @@ Node* primary(void) {
         return node;
     }
     return new_node_num(expect_number());
+}
+
+Type* get_type(Node* node) {
+    Type* t;
+    switch (node->kind) {
+        case ND_ADD:
+        case ND_SUB:
+        case ND_MUL:
+        case ND_DIV:
+        case ND_EQ:
+        case ND_NE:
+        case ND_LT:
+        case ND_LE:
+        case ND_NUM:
+        case ND_CALL:
+            t = calloc(1, sizeof(Type));
+            t->type = TP_INT;
+            return t;
+        case ND_ASSIGN:
+            return get_type(node->rhs);
+        case ND_LVAR:
+            return node->lvar->type;
+        case ND_DEREF:
+            return get_type(node->lhs);
+        case ND_ADDR:
+            t = calloc(1, sizeof(Type));
+            t->type = TP_PTR;
+            t->ptr_to = get_type(node->lhs);
+            return t;
+        case ND_RETURN:
+        case ND_IF:
+        case ND_FOR:
+        case ND_BLOCK:
+        case ND_NOP:
+            return NULL;
+    }
 }

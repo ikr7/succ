@@ -64,12 +64,18 @@ typedef enum {
     ND_CALL,
     ND_DEREF,
     ND_ADDR,
+    ND_NOP,
 } NodeKind;
+
+typedef enum {
+    TP_INT,
+    TP_PTR,
+} TypeKind;
 
 typedef struct Type Type;
 
 struct Type {
-    enum { INT, PTR } type;
+    TypeKind type;
     Type* ptr_to;
 };
 
@@ -151,6 +157,8 @@ Node* add(void);
 Node* mul(void);
 Node* unary(void);
 Node* primary(void);
+
+Type* get_type(Node* node);
 
 // codegen.c
 
