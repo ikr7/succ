@@ -121,6 +121,11 @@ Token* tokenize(void) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }
+        if (strncmp(p, "sizeof", 6) == 0 && !is_alnum_underscore(p[6])) {
+            cur = new_token(TK_RESERVED, cur, p, 6);
+            p += 6;
+            continue;
+        }
         if (strncmp(p, "return", 6) == 0 && !is_alnum_underscore(p[6])) {
             cur = new_token(TK_RETURN, cur, p, 6);
             p += 6;

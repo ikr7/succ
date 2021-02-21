@@ -312,6 +312,16 @@ Node* unary(void) {
         node->lhs = unary();
         return node;
     }
+    if (consume_punct("sizeof")) {
+        Node* lhs = unary();
+        Type* type = get_type(lhs);
+        if (type->type == TP_INT) {
+            return new_node_num(4);
+        }
+        if (type->type == TP_PTR) {
+            return new_node_num(8);
+        }
+    }
     return primary();
 }
 
@@ -358,8 +368,36 @@ Node* primary(void) {
 Type* get_type(Node* node) {
     Type* t;
     switch (node->kind) {
-        case ND_ADD:
-        case ND_SUB:
+        case ND_ADD: {
+            Type* lhs_type = get_type(node->lhs);
+            Type* rhs_type = get_type(node->rhs);
+            t = calloc(1, sizeof(Type));
+            if (lhs_type->type == TP_INT && rhs_type->type == TP_INT) {
+                t->type = TP_INT;
+            }
+            if (lhs_type->type == TP_PTR && rhs_type->type == TP_INT) {
+                t->type = TP_PTR;
+            }
+            if (lhs_type->type == TP_INT && rhs_type->type == TP_PTR) {
+                t->type = TP_PTR;
+            }
+            return t;
+        }
+        case ND_SUB: {
+            Type* lhs_type = get_type(node->lhs);
+            Type* rhs_type = get_type(node->rhs);
+            t = calloc(1, sizeof(Type));
+            if (lhs_type->type == TP_INT && rhs_type->type == TP_INT) {
+                t->type = TP_INT;
+            }
+            if (lhs_type->type == TP_PTR && rhs_type->type == TP_INT) {
+                t->type = TP_PTR;
+            }
+            if (lhs_type->type == TP_PTR && rhs_type->type == TP_PTR) {
+                t->type = TP_INT;
+            }
+            return t;
+        }
         case ND_MUL:
         case ND_DIV:
         case ND_EQ:
@@ -376,7 +414,7 @@ Type* get_type(Node* node) {
         case ND_LVAR:
             return node->lvar->type;
         case ND_DEREF:
-            return get_type(node->lhs);
+            return node->lhs->lvar->type->ptr_to;
         case ND_ADDR:
             t = calloc(1, sizeof(Type));
             t->type = TP_PTR;
