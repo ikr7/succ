@@ -15,13 +15,33 @@ int dump_tokens(void) {
 
 int main(int argc, char** argv) {
 
-	if (argc != 2) {
-		fprintf(stderr, "invalid number of arguments\n");
-		return 1;
-	}
+    struct option long_options[] = {
+        {"dump-tokens", no_argument, NULL, 't'},
+        {0, 0, 0, 0}
+    };
+    int opt, option_index;
+    bool opt_dump_tokens = false;
+    while ((opt = getopt_long(argc, argv, "", long_options, &option_index)) != -1) {
+        switch (opt) {
+            case 't':
+                opt_dump_tokens = true;
+                break;
+        }
+    }
 
-    user_input = argv[1];
+    if (argc - optind != 1) {
+        fprintf(stderr, "error: no source given\n");
+        return 1;
+    }
+
+    user_input = argv[optind];
 	token = tokenize();
+
+    if (opt_dump_tokens) {
+        dump_tokens();
+        return 0;
+    }
+
     program();
 
     gen();
