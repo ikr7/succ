@@ -152,25 +152,25 @@ Node* stmt(void) {
         node->kind = ND_NOP;
         return node;
     }
-    if (consume_token(TK_RETURN)) {
+    if (consume_punct("return")) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
         node->return_body = expr();
         expect_punct(";");
         return node;
     }
-    if (consume_token(TK_IF)) {
+    if (consume_punct("if")) {
         expect_punct("(");
         Node* cond = expr();
         expect_punct(")");
         Node* true_stmt = stmt();
-        if (consume_token(TK_ELSE)) {
+        if (consume_punct("else")) {
             Node* false_stmt = stmt();
             return new_node_if(cond, true_stmt, false_stmt);
         }
         return new_node_if(cond, true_stmt, NULL);
     }
-    if (consume_token(TK_FOR)) {
+    if (consume_punct("for")) {
         Node* init;
         Node* cond;
         Node* tick;
@@ -197,7 +197,7 @@ Node* stmt(void) {
         body = stmt();
         return new_node_for(init, cond, tick, body);
     }
-    if (consume_token(TK_WHILE)) {
+    if (consume_punct("while")) {
         Node* cond;
         Node* body;
         expect_punct("(");
