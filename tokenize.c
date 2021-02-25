@@ -76,9 +76,9 @@ bool at_eof(void) {
 
 bool is_alnum_underscore(char c) {
     return (
-        'a' <= c && c <= 'z' ||
-        'A' <= c && c <= 'Z' ||
-        '0' <= c && c <= '9' ||
+        ('a' <= c && c <= 'z') ||
+        ('A' <= c && c <= 'Z') ||
+        ('0' <= c && c <= '9') ||
         c == '_'
     );
 }
@@ -151,13 +151,13 @@ Token* tokenize(void) {
             p += 5;
             continue;
         }
-        if ('a' <= *p && *p <= 'z' || 'A' <= *p && *p <= 'Z' || *p == '_') {
+        if (('a' <= *p && *p <= 'z') || ('A' <= *p && *p <= 'Z') || *p == '_') {
             cur = new_token(TK_IDENT, cur, p, 0);
             char* q = p;
             while (
-                'a' <= *p && *p <= 'z' ||
-                'A' <= *p && *p <= 'Z' ||
-                '0' <= *p && *p <= '9' ||
+                ('a' <= *p && *p <= 'z') ||
+                ('A' <= *p && *p <= 'Z') ||
+                ('0' <= *p && *p <= '9') ||
                 *p == '_'
             ) {
                 p++;

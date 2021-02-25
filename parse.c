@@ -32,7 +32,7 @@ Node* new_node_for(Node* for_init, Node* for_cond, Node* for_tick, Node* for_bod
     node->for_tick = for_tick;
     node->for_body = for_body;
     return node;
-};
+}
 
 void program(void) {
     int i = 0;
@@ -120,8 +120,8 @@ Func* funcdef(void) {
 
 Node* stmt(void) {
     Node* node;
-    Type* type;
-    if (type = typename()) {
+    Type* type = typename();
+    if (type) {
         Token* ident = expect_token(TK_IDENT);
         expect_punct(";");
         node = calloc(1, sizeof(Node));

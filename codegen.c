@@ -66,6 +66,8 @@ void gen_node(Node* node) {
 
     switch (node->kind) {
         case ND_NOP:
+        case ND_VARDEC:
+        case ND_SIZEOF:
             return;
         case ND_ADD:
         case ND_SUB:
@@ -226,6 +228,7 @@ void gen_binop(Node* node) {
                 break;
             }
             error("incompatible operands for `+`");
+            break;
         }
         case ND_SUB: {
             Type* lhs_type = get_type(node->lhs);
@@ -261,6 +264,7 @@ void gen_binop(Node* node) {
                 break;
             }
             error("incompatible operands for `-`");
+            break;
         }
         case ND_MUL:
             printf("  imul rax, rdi\n");
@@ -288,6 +292,20 @@ void gen_binop(Node* node) {
             printf("  cmp rax, rdi\n");
             printf("  setle al\n");
             printf("  movzb rax, al\n");
+            break;
+        case ND_VARDEC:
+        case ND_SIZEOF:
+        case ND_ASSIGN:
+        case ND_LVAR:
+        case ND_NUM:
+        case ND_RETURN:
+        case ND_IF:
+        case ND_FOR:
+        case ND_BLOCK:
+        case ND_CALL:
+        case ND_DEREF:
+        case ND_ADDR:
+        case ND_NOP:
             break;
     }
 
