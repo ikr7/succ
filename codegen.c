@@ -5,7 +5,16 @@ int label_count = 0;
 void gen(void) {
 
     printf(".intel_syntax noprefix\n");
-    printf(".globl main\n");
+    printf(".globl ");
+
+    for (int i = 0; code[i]; i++) {
+        printf("%.*s", code[i]->len, code[i]->name);
+        if (code[i + 1]) {
+            printf(", ");
+        }
+    }
+
+    printf("\n");
 
     for (int i = 0; code[i]; i++) {
         gen_func(code[i]);
