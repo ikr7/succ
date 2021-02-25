@@ -61,6 +61,8 @@ typedef enum {
     ND_DEREF,
     ND_ADDR,
     ND_NOP,
+    ND_VARDEC,
+    ND_SIZEOF,
 } NodeKind;
 
 typedef enum {
@@ -85,19 +87,23 @@ struct LVar {
     Type* type;
 };
 
-LVar* find_lvar(LVar* locals, char* name, int len);
-
 typedef struct Node Node;
 
 struct Node {
+
     NodeKind kind;
 
-    // binary operators
+    // binary & unary operators
     Node* lhs;
     Node* rhs;
 
     // variable
+    char* var_name;
+    int var_name_len;
+    Type* var_type;
     LVar* lvar;
+
+    // number literal
     int val;
 
     // return
@@ -123,6 +129,7 @@ struct Node {
     int function_len;
     Node* function_arg;
     Node* function_arg_next;
+
 };
 
 Node* new_node_binop(NodeKind kind, Node* lhs, Node* rhs);
@@ -154,6 +161,13 @@ Node* mul(void);
 Node* unary(void);
 Node* primary(void);
 
+// analyze.c
+
+void analyze(void);
+void analyze_func(Func* func);
+void analyze_node(Node* node, Func* func);
+
+LVar* find_lvar(LVar* locals, char* name, int len);
 Type* get_type(Node* node);
 
 // codegen.c

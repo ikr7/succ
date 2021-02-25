@@ -34,15 +34,6 @@ Node* new_node_for(Node* for_init, Node* for_cond, Node* for_tick, Node* for_bod
     return node;
 };
 
-LVar* find_lvar(LVar* locals, char* name, int len) {
-    for (LVar* var = locals; var; var = var->next) {
-        if (var->len == len && strncmp(var->name, name, len) == 0) {
-            return var;
-        }
-    }
-    return NULL;
-}
-
 void program(void) {
     int i = 0;
     while (!at_eof()) {;
@@ -110,8 +101,6 @@ Func* funcdef(void) {
             cur = arg;
         }
 
-        func->locals = func->args;
-
     }
 
     expect_punct("{");
@@ -135,21 +124,11 @@ Node* stmt(void) {
     if (type = typename()) {
         Token* ident = expect_token(TK_IDENT);
         expect_punct(";");
-        LVar* lvar = find_lvar(cur_func->locals, ident->str, ident->len);
-        if (lvar) {
-            error_at(ident->str, "%.*s is already declared", ident->len, ident->str);
-        } else {
-            lvar = calloc(1, sizeof(LVar));
-            lvar->next = cur_func->locals;
-            lvar->name = ident->str;
-            lvar->len = ident->len;
-            lvar->type = type;
-            lvar->offset = cur_func->offset + 8;
-            cur_func->locals = lvar;
-            cur_func->offset += 8;
-        }
         node = calloc(1, sizeof(Node));
-        node->kind = ND_NOP;
+        node->kind = ND_VARDEC;
+        node->var_name = ident->str;
+        node->var_name_len = ident->len;
+        node->var_type = type;
         return node;
     }
     if (consume_punct("return")) {
@@ -313,14 +292,10 @@ Node* unary(void) {
         return node;
     }
     if (consume_punct("sizeof")) {
-        Node* lhs = unary();
-        Type* type = get_type(lhs);
-        if (type->type == TP_INT) {
-            return new_node_num(4);
-        }
-        if (type->type == TP_PTR) {
-            return new_node_num(8);
-        }
+        Node* node = calloc(1, sizeof(Node));
+        node->kind = ND_SIZEOF;
+        node->lhs = unary();
+        return node;
     }
     return primary();
 }
@@ -354,77 +329,9 @@ Node* primary(void) {
         }
         Node* node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
-        LVar* lvar = find_lvar(cur_func->locals, tok->str, tok->len);
-        if (lvar) {
-            node->lvar = lvar;
-        } else {
-            error_at(tok->str, "%.*s is not declared yet", tok->len, tok->str);
-        }
+        node->var_name = tok->str;
+        node->var_name_len = tok->len;
         return node;
     }
     return new_node_num(expect_number());
-}
-
-Type* get_type(Node* node) {
-    Type* t;
-    switch (node->kind) {
-        case ND_ADD: {
-            Type* lhs_type = get_type(node->lhs);
-            Type* rhs_type = get_type(node->rhs);
-            t = calloc(1, sizeof(Type));
-            if (lhs_type->type == TP_INT && rhs_type->type == TP_INT) {
-                t->type = TP_INT;
-            }
-            if (lhs_type->type == TP_PTR && rhs_type->type == TP_INT) {
-                t->type = TP_PTR;
-            }
-            if (lhs_type->type == TP_INT && rhs_type->type == TP_PTR) {
-                t->type = TP_PTR;
-            }
-            return t;
-        }
-        case ND_SUB: {
-            Type* lhs_type = get_type(node->lhs);
-            Type* rhs_type = get_type(node->rhs);
-            t = calloc(1, sizeof(Type));
-            if (lhs_type->type == TP_INT && rhs_type->type == TP_INT) {
-                t->type = TP_INT;
-            }
-            if (lhs_type->type == TP_PTR && rhs_type->type == TP_INT) {
-                t->type = TP_PTR;
-            }
-            if (lhs_type->type == TP_PTR && rhs_type->type == TP_PTR) {
-                t->type = TP_INT;
-            }
-            return t;
-        }
-        case ND_MUL:
-        case ND_DIV:
-        case ND_EQ:
-        case ND_NE:
-        case ND_LT:
-        case ND_LE:
-        case ND_NUM:
-        case ND_CALL:
-            t = calloc(1, sizeof(Type));
-            t->type = TP_INT;
-            return t;
-        case ND_ASSIGN:
-            return get_type(node->rhs);
-        case ND_LVAR:
-            return node->lvar->type;
-        case ND_DEREF:
-            return node->lhs->lvar->type->ptr_to;
-        case ND_ADDR:
-            t = calloc(1, sizeof(Type));
-            t->type = TP_PTR;
-            t->ptr_to = get_type(node->lhs);
-            return t;
-        case ND_RETURN:
-        case ND_IF:
-        case ND_FOR:
-        case ND_BLOCK:
-        case ND_NOP:
-            return NULL;
-    }
 }

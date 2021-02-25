@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
     }
 
     program();
-
+    analyze();
     gen();
 
     return 0;
