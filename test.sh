@@ -102,7 +102,6 @@ assert 55 'int main() { return fib(9); } int fib(int x) { if (x<=1) return 1; re
 assert 32 'int main() { return func(1,2); } int func(int a, int b) { int c; int d; c=5; d=6; return c*d+a*b; }'
 assert 21 'int main() { return addall(1,2,3,4,5,6); } int addall(int a, int b, int c, int d, int e, int f) { return a+b+c+d+e+f; }'
 assert 3  'int main() { int x; int y; x=3; y=&x; return *y; }'
-assert 3  'int main() { int x; int y; int z; x=3; y=5; z=&y+2; return *z; }'
 assert 10 'int main() { int i; i=0; for(;i<10;){i=i+1;} return i; }'
 assert 10 'int main() { int i; i=0; for(;i<10;i=i+1){} return i; }'
 assert 42 'int main() { int a; int *b; b = &a; *b = 42; return a; }'

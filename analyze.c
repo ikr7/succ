@@ -87,9 +87,7 @@ void analyze_node(Node* node, Func* func) {
                 lvar->name = node->var_name;
                 lvar->len = node->var_name_len;
                 lvar->type = node->var_type;
-                lvar->offset = cur_func->offset + 8;
                 func->locals = lvar;
-                func->offset += 8;
             }
             break;
         }

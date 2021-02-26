@@ -80,9 +80,7 @@ Func* funcdef(void) {
         arg->name = tok->str;
         arg->len = tok->len;
         arg->type = argtype;
-        arg->offset = func->offset + 8;
         
-        func->offset += 8;
         func->args = arg;
 
         LVar* cur = arg;
@@ -96,8 +94,6 @@ Func* funcdef(void) {
             arg->len = tok->len;
             arg->type = type;
             cur->next = arg;
-            arg->offset = func->offset + 8;
-            func->offset += 8;
             cur = arg;
         }
 

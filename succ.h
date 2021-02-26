@@ -178,6 +178,8 @@ void gen_node(Node* node);
 void gen_binop(Node* node);
 void gen_lval(Node* node);
 
+size_t get_size(Type* type);
+
 // main.c
 
 int dump_tokens(void);

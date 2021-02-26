@@ -24,6 +24,12 @@ void gen(void) {
 
 void gen_func(Func* func) {
 
+    for (LVar* l = func->locals; l; l = l->next) {
+        size_t size = get_size(l->type);
+        l->offset = func->offset + size;
+        func->offset += size;
+    }
+
     printf("%.*s:\n", func->len, func->name);
 
     printf("  push rbp\n");
@@ -334,4 +340,14 @@ void gen_lval(Node* node) {
         return;
     }
     error("assignment to non-variable");
+}
+
+size_t get_size(Type* type) {
+    if (type->type == TP_INT) {
+        return 8;
+    }
+    if (type->type == TP_PTR) {
+        return 8;
+    }
+    return 8;
 }
