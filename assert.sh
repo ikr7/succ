@@ -9,7 +9,7 @@ COLOR_OFF="${ESC}[m"
 expected="$1"
 input="$2"
 ./succ "$input" > "$name.s"
-cc -o "$name.exe" "$name.s"
+cc -o "$name.exe" "$name.s" "tmp2.o"
 ./$name.exe
 actual="$?"
 if [ "$actual" = "$expected" ]; then
