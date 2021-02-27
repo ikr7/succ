@@ -175,3 +175,14 @@ Type* get_type(Node* node) {
     }
     return NULL;
 }
+
+size_t get_size(Type* type) {
+    switch (type->type) {
+        case TP_INT:
+        case TP_PTR:
+            return 8;
+        case TP_ARR:
+            return type->array_size * get_size(type->ptr_to);
+    }
+    return 0;
+}

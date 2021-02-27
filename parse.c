@@ -119,6 +119,16 @@ Node* stmt(void) {
     Type* type = typename();
     if (type) {
         Token* ident = expect_token(TK_IDENT);
+        size_t array_size;
+        if (consume_punct("[")) {
+            array_size = expect_number();
+            expect_punct("]");
+            Type* t = calloc(1, sizeof(Type));
+            t->type = TP_ARR;
+            t->array_size = array_size;
+            t->ptr_to = type;
+            type = t;
+        }
         expect_punct(";");
         node = calloc(1, sizeof(Node));
         node->kind = ND_VARDEC;

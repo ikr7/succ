@@ -68,6 +68,7 @@ typedef enum {
 typedef enum {
     TP_INT,
     TP_PTR,
+    TP_ARR,
 } TypeKind;
 
 typedef struct Type Type;
@@ -75,6 +76,7 @@ typedef struct Type Type;
 struct Type {
     TypeKind type;
     Type* ptr_to;
+    size_t array_size;
 };
 
 typedef struct LVar LVar;
@@ -170,6 +172,8 @@ void analyze_node(Node* node, Func* func);
 LVar* find_lvar(LVar* locals, char* name, int len);
 Type* get_type(Node* node);
 
+size_t get_size(Type* type);
+
 // codegen.c
 
 void gen(void);
@@ -177,8 +181,6 @@ void gen_func(Func* func);
 void gen_node(Node* node);
 void gen_binop(Node* node);
 void gen_lval(Node* node);
-
-size_t get_size(Type* type);
 
 // main.c
 

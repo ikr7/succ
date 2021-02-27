@@ -58,3 +58,4 @@
 8  int main() { int x; int *y; return sizeof(*y); }
 8  int main() { int x; int *y; return sizeof(1); }
 8  int main() { int x; int *y; return sizeof(sizeof(1)); }
+80 int main() { int arr[10]; return sizeof(arr); }

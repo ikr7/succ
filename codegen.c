@@ -341,13 +341,3 @@ void gen_lval(Node* node) {
     }
     error("assignment to non-variable");
 }
-
-size_t get_size(Type* type) {
-    if (type->type == TP_INT) {
-        return 8;
-    }
-    if (type->type == TP_PTR) {
-        return 8;
-    }
-    return 8;
-}
