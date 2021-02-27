@@ -93,16 +93,8 @@ void analyze_node(Node* node, Func* func) {
         }
         case ND_SIZEOF: {
             analyze_node(node->lhs, func);
-            Type* type = get_type(node->lhs);
-            int size;
-            if (type->type == TP_INT) {
-                size = 4;
-            }
-            if (type->type == TP_PTR) {
-                size = 8;
-            }
             node->kind = ND_NUM;
-            node->val = size;
+            node->val = get_size(get_type(node->lhs));
             break;
         }
     }

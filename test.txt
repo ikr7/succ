@@ -51,10 +51,10 @@
 3  int main() { int *p; alloc4(&p, 2, 3, 5, 7); int *q; q = p + 1; return *q; }
 2  int main() { int *p; int *q; alloc4(&p, 2, 3, 5, 7); q = p + 2; return q - p; }
 5  int main() { int *p; int *q; alloc4(&p, 2, 3, 5, 7); q = p + 3; q = q - 1; return *q; }
-4  int main() { int x; int *y; return sizeof(x); }
+8  int main() { int x; int *y; return sizeof(x); }
 8  int main() { int x; int *y; return sizeof(y); }
-4  int main() { int x; int *y; return sizeof(x + 3); }
+8  int main() { int x; int *y; return sizeof(x + 3); }
 8  int main() { int x; int *y; return sizeof(y + 3); }
-4  int main() { int x; int *y; return sizeof(*y); }
-4  int main() { int x; int *y; return sizeof(1); }
-4  int main() { int x; int *y; return sizeof(sizeof(1)); }
+8  int main() { int x; int *y; return sizeof(*y); }
+8  int main() { int x; int *y; return sizeof(1); }
+8  int main() { int x; int *y; return sizeof(sizeof(1)); }
