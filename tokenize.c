@@ -1,6 +1,6 @@
 #include "succ.h"
 
-void error(char* fmt, ...) {
+noreturn void error(char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
@@ -8,7 +8,7 @@ void error(char* fmt, ...) {
     exit(1);
 }
 
-void error_at(char* loc, char* fmt, ...) {
+noreturn void error_at(char* loc, char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     int pos = loc - user_input;

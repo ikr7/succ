@@ -243,7 +243,6 @@ void gen_binop(Node* node) {
                 break;
             }
             error("incompatible operands for `+`");
-            break;
         }
         case ND_SUB: {
             Type* lhs_type = get_type(node->lhs);
@@ -279,7 +278,6 @@ void gen_binop(Node* node) {
                 break;
             }
             error("incompatible operands for `-`");
-            break;
         }
         case ND_MUL:
             printf("  imul rax, rdi\n");

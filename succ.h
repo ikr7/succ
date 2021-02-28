@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdnoreturn.h>
 
 // tokenize.c
 
@@ -25,8 +26,8 @@ struct Token {
     size_t len;
 };
 
-void error(char* fmt, ...);
-void error_at(char* loc, char* fmt, ...);
+noreturn void error(char* fmt, ...);
+noreturn void error_at(char* loc, char* fmt, ...);
 
 Token* consume_token(TokenKind kind);
 Token* expect_token(TokenKind kind);
